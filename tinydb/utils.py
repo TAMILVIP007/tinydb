@@ -27,13 +27,7 @@ def with_typehint(baseclass: Type[T]):
     MyPy does not. For that reason TinyDB has a MyPy plugin in
     ``mypy_plugin.py`` that adds support for this pattern.
     """
-    if TYPE_CHECKING:
-        # In the case of type checking: pretend that the target class inherits
-        # from the specified base class
-        return baseclass
-
-    # Otherwise: just inherit from `object` like a regular Python class
-    return object
+    return baseclass if TYPE_CHECKING else object
 
 
 class LRUCache(abc.MutableMapping, Generic[K, V]):

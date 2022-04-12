@@ -98,13 +98,10 @@ class QueryInstance:
         return hash(self._hash)
 
     def __repr__(self):
-        return 'QueryImpl{}'.format(self._hash)
+        return f'QueryImpl{self._hash}'
 
     def __eq__(self, other: object):
-        if isinstance(other, QueryInstance):
-            return self._hash == other._hash
-
-        return False
+        return self._hash == other._hash if isinstance(other, QueryInstance) else False
 
     # --- Query modifiers -----------------------------------------------------
 
@@ -180,7 +177,7 @@ class Query(QueryInstance):
         )
 
     def __repr__(self):
-        return '{}()'.format(type(self).__name__)
+        return f'{type(self).__name__}()'
 
     def __hash__(self):
         return super().__hash__()
@@ -231,10 +228,7 @@ class Query(QueryInstance):
             try:
                 # Resolve the path
                 for part in self._path:
-                    if isinstance(part, str):
-                        value = value[part]
-                    else:
-                        value = part(value)
+                    value = value[part] if isinstance(part, str) else part(value)
             except (KeyError, TypeError):
                 return False
             else:
@@ -345,10 +339,11 @@ class Query(QueryInstance):
         :param flags: regex flags to pass to ``re.match``
         """
         def test(value):
-            if not isinstance(value, str):
-                return False
-
-            return re.match(regex, value, flags) is not None
+            return (
+                re.match(regex, value, flags) is not None
+                if isinstance(value, str)
+                else False
+            )
 
         return self._generate_test(test, ('matches', self._path, regex))
 
@@ -364,10 +359,11 @@ class Query(QueryInstance):
         """
 
         def test(value):
-            if not isinstance(value, str):
-                return False
-
-            return re.search(regex, value, flags) is not None
+            return (
+                re.search(regex, value, flags) is not None
+                if isinstance(value, str)
+                else False
+            )
 
         return self._generate_test(test, ('search', self._path, regex))
 
@@ -479,11 +475,9 @@ class Query(QueryInstance):
 
     def fragment(self, document: Mapping) -> QueryInstance:
         def test(value):
-            for key in document:
-                if key not in value or value[key] != document[key]:
-                    return False
-
-            return True
+            return not any(
+                key not in value or value[key] != document[key] for key in document
+            )
 
         return self._generate_test(
             lambda value: test(value),

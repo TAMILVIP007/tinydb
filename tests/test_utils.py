@@ -81,11 +81,8 @@ def test_lru_cache_unlimited_explicit():
 
 def test_lru_cache_iteration_works():
     cache = LRUCache()
-    count = 0
     for _ in cache:
         assert False, 'there should be no elements in the cache'
-
-    assert count == 0
 
 
 def test_freeze():

@@ -235,8 +235,7 @@ def test_yaml(tmpdir):
 
         def read(self):
             with open(self.filename) as handle:
-                data = yaml.safe_load(handle.read())
-                return data
+                return yaml.safe_load(handle.read())
 
         def write(self, data):
             with open(self.filename, 'w') as handle:

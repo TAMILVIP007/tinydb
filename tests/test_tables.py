@@ -144,7 +144,7 @@ def test_table_is_iterable(db):
 
     table.insert_multiple({'int': i} for i in range(3))
 
-    assert [r for r in table] == table.all()
+    assert list(table) == table.all()
 
 
 def test_table_name(db):
