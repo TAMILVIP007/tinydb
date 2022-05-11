@@ -114,11 +114,12 @@ class Table:
     def __repr__(self):
         args = [
             'name={!r}'.format(self.name),
-            'total={}'.format(len(self)),
-            'storage={}'.format(self._storage),
+            f'total={len(self)}',
+            f'storage={self._storage}',
         ]
 
-        return '<{} {}>'.format(type(self).__name__, ', '.join(args))
+
+        return f"<{type(self).__name__} {', '.join(args)}>"
 
     @property
     def name(self) -> str:
@@ -304,19 +305,14 @@ class Table:
             return self.document_class(raw_doc, doc_id)
 
         elif cond is not None:
-            # Find a document specified by a query
-            # The trailing underscore in doc_id_ is needed so MyPy
-            # doesn't think that `doc_id_` (which is a string) needs
-            # to have the same type as `doc_id` which is this function's
-            # parameter and is an optional `int`.
-            for doc_id_, doc in self._read_table().items():
-                if cond(doc):
-                    return self.document_class(
-                        doc,
-                        self.document_id_class(doc_id_)
-                    )
-
-            return None
+            return next(
+                (
+                    self.document_class(doc, self.document_id_class(doc_id_))
+                    for doc_id_, doc in self._read_table().items()
+                    if cond(doc)
+                ),
+                None,
+            )
 
         raise RuntimeError('You have to pass either cond or doc_id')
 

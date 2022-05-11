@@ -30,7 +30,7 @@ def test_caching_write_many(storage):
     assert storage.memory is None
 
     # Write contents
-    for x in range(2):
+    for _ in range(2):
         storage.write(doc)
         assert storage.memory is None  # Still cached
 

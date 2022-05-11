@@ -21,7 +21,7 @@ def test_drop_tables(db: TinyDB):
 def test_all(db: TinyDB):
     db.drop_tables()
 
-    for i in range(10):
+    for _ in range(10):
         db.insert({})
 
     assert len(db.all()) == 10
@@ -622,7 +622,7 @@ def test_query_cache():
 
 
 def test_tinydb_is_iterable(db: TinyDB):
-    assert [r for r in db] == db.all()
+    assert list(db) == db.all()
 
 
 def test_repr(tmpdir):
